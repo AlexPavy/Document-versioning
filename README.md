@@ -1,4 +1,4 @@
-# Tallarium-test
+# Passfort-test
 
 [Task description](./Final%20passfort-be-tech-task.pdf)
 
