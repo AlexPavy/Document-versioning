@@ -50,19 +50,36 @@ class DocumentsDb:
         }
 
     def get_document(self, title: str, ts: str):
+        """Get last document at current timestamp
+        """
         if title not in self._docs:
             return None
 
         if ts == "latest" or not ts:
             ts = self._docs[title]["latest_ts"]
 
-        if ts not in self._docs[title]:
+        all_ts = list(self._docs[title].keys())
+        all_ts.sort()
+        all_ts = all_ts[:-1]
+        prev_ts = all_ts[0]
+        if prev_ts > ts:
+            # timestamp older than first revision
+            return None
+
+        for cts in all_ts:
+            # look last revision at before this time
+            if cts > ts:
+                # cts is the next one, so prev_ts is the last revision
+                break
+            prev_ts = cts
+
+        if prev_ts not in self._docs[title]:
             return None
 
         return {
             "title": title,
-            "timestamp": ts,
-            "content": self._docs[title][ts]
+            "timestamp": prev_ts,
+            "content": self._docs[title][prev_ts]
         }
 
 

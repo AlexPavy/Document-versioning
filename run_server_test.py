@@ -94,6 +94,45 @@ class ServerTest(unittest.TestCase):
         doc = self.app.get(f"/documents/firstdoc/latest")
         self.assertEqual('The first document updated', doc.json["content"])
 
+    def test_get_by_timestamp_before_doc(self):
+        ts1 = str(time.time())
+        time.sleep(0.2)
+        self.app.post(
+            "/documents/firstdoc",
+            data=json.dumps({"content": "The first document"}),
+            content_type='application/json'
+        )
+        err = self.app.get(f"/documents/firstdoc/{ts1}")
+        self.assertEqual(404, err.status_code)
+
+    def test_get_by_timestamp_after_doc(self):
+        self.app.post(
+            "/documents/firstdoc",
+            data=json.dumps({"content": "The first document"}),
+            content_type='application/json'
+        )
+        time.sleep(0.2)
+        ts1 = str(time.time())
+        doc = self.app.get(f"/documents/firstdoc/{ts1}")
+        self.assertEqual('The first document', doc.json["content"])
+
+    def test_get_by_timestamp_between_2_revisions(self):
+        self.app.post(
+            "/documents/firstdoc",
+            data=json.dumps({"content": "The first document"}),
+            content_type='application/json'
+        )
+        time.sleep(0.1)
+        ts1 = str(time.time())
+        time.sleep(0.1)
+        self.app.post(
+            "/documents/firstdoc",
+            data=json.dumps({"content": "The first document updated"}),
+            content_type='application/json'
+        )
+        doc = self.app.get(f"/documents/firstdoc/{ts1}")
+        self.assertEqual('The first document', doc.json["content"])
+
     def test_post_document(self):
         # tested by test_get_by_timestamp
         pass
