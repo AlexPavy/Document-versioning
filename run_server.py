@@ -24,14 +24,17 @@ class DocumentsDb:
     def __init__(self):
         self._docs = {}
 
+    def clear(self):
+        self._docs = {}
+
     def add(self, title: str, content: str) -> int:
-        ts = int(time.time())
+        ts = str(time.time())
         if title in self._docs:
-            self._docs[title][str(ts)] = content
+            self._docs[title][ts] = content
             self._docs[title]["latest_ts"] = ts
         else:
             self._docs[title] = {}
-            self._docs[title][str(ts)] = content
+            self._docs[title][ts] = content
             self._docs[title]["latest_ts"] = ts
         return ts
 
@@ -39,6 +42,8 @@ class DocumentsDb:
         return list(self._docs.keys())
 
     def get_revisions(self, title: str):
+        if title not in self._docs:
+            return None
         return {
             "title": title,
             "revisions": self._docs[title]
