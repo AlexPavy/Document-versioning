@@ -1,6 +1,4 @@
-# Passfort-test
-
-[Task description](./Final%20passfort-be-tech-task.pdf)
+# Flask Document API
 
 To run it:
 - Install python 3+
